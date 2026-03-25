@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Devops Reviewer"
+  short_description: "Review infrastructure changes for operational risk"
+  default_prompt: "Use $gemo-devops-reviewer to review the infrastructure changes for rollout safety, secrets, and operational risk."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Security Reviewer"
+  short_description: "Review changes for security and trust-boundary risk"
+  default_prompt: "Use $gemo-security-reviewer to review this Gemo change for auth, token, trust-boundary, and security risk."
+
+policy:
+  allow_implicit_invocation: true

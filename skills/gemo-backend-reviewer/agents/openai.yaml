@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Backend Reviewer"
+  short_description: "Review backend changes for risk and quality"
+  default_prompt: "Use $gemo-backend-reviewer to review the backend changes for correctness, security, and rollout risk."
+
+policy:
+  allow_implicit_invocation: true

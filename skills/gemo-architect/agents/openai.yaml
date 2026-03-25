@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Architect"
+  short_description: "Architecture-first design for Gemo features"
+  default_prompt: "Use $gemo-architect to evaluate the design options, repo impact, and rollout risk for this Gemo feature."
+
+policy:
+  allow_implicit_invocation: true

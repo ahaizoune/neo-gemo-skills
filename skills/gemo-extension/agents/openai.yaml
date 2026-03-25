@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Extension"
+  short_description: "Browser extension implementation for Gemo"
+  default_prompt: "Use $gemo-extension to implement the sourcing-extension portion of this Gemo feature."
+
+policy:
+  allow_implicit_invocation: true

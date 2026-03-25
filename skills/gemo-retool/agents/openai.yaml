@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Retool"
+  short_description: "Retool surface implementation for Gemo"
+  default_prompt: "Use $gemo-retool to implement the Retool component portion of this Gemo feature."
+
+policy:
+  allow_implicit_invocation: true

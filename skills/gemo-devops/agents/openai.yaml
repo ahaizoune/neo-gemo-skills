@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Devops"
+  short_description: "Infrastructure and deployment work for Gemo"
+  default_prompt: "Use $gemo-devops to implement the infrastructure or deployment portion of this Gemo feature."
+
+policy:
+  allow_implicit_invocation: true

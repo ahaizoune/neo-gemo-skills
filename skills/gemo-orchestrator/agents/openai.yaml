@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Orchestrator"
+  short_description: "Brainstorm, plan, and orchestrate Gemo features"
+  default_prompt: "Use $gemo-orchestrator to brainstorm this Gemo feature, map the impacted repos, and prepare the implementation workflow."
+
+policy:
+  allow_implicit_invocation: true

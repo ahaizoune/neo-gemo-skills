@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo React"
+  short_description: "React and Next.js implementation for Gemo"
+  default_prompt: "Use $gemo-react to implement the frontend portion of this Gemo feature in the affected Next.js app."
+
+policy:
+  allow_implicit_invocation: true

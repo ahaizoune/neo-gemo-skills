@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo React Reviewer"
+  short_description: "Review frontend changes for risk and quality"
+  default_prompt: "Use $gemo-react-reviewer to review the frontend changes for correctness, state integrity, and accessibility."
+
+policy:
+  allow_implicit_invocation: true

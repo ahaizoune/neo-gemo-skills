@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Foundation"
+  short_description: "Shared Gemo architecture and delivery doctrine"
+  default_prompt: "Use $gemo-foundation to load the shared Gemo architecture, traceability, and cmux doctrine for this task."
+
+policy:
+  allow_implicit_invocation: true
