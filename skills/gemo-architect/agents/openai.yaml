@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Architect"
-  short_description: "Architecture-first design for Gemo features"
-  default_prompt: "Use $gemo-architect to evaluate the design options, repo impact, and rollout risk for this Gemo feature."
+  short_description: "Shape and review Gemo architecture decisions"
+  default_prompt: "Use $gemo-architect to produce an architecture packet for this Gemo feature, including source-of-truth ownership, quality-attribute tradeoffs, compatibility strategy, trust boundaries, validation plans, and rollout risk."
 
 policy:
   allow_implicit_invocation: true

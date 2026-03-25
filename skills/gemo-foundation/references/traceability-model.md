@@ -18,11 +18,27 @@ Inside the feature's home repo:
 ```text
 docs/features/<feature-slug>/agentic/
 ├── feature-state.md
+├── 01-discovery.md
+├── 02-grooming.md
+├── 03-architecture.md
+├── 04-execution-plan.md
 ├── decisions.md
 ├── events.jsonl
 ├── reviews.md
 └── rollout.md
 ```
+
+## Artifact Roles
+
+- `feature-state.md`: current read model and document index
+- `01-discovery.md`: brainstorm and discovery packet
+- `02-grooming.md`: scoped feature packet and human gate preparation
+- `03-architecture.md`: architecture packet
+- `04-execution-plan.md`: task graph, ownership, review plan, and cmux plan
+- `decisions.md`: chronological decision ledger
+- `events.jsonl`: append-only event log
+- `reviews.md`: review findings, verification evidence, and sign-off status
+- `rollout.md`: rollout sequence, rollback, residual risk, and knowledge-base update status
 
 ## Event Rules
 
@@ -46,9 +62,13 @@ Recommended fields:
 Good event types:
 
 - `feature_trace_initialized`
+- `discovery_started`
+- `discovery_completed`
+- `grooming_completed`
 - `architecture_option_recorded`
 - `architecture_decision_approved`
 - `human_gate_approved`
+- `execution_plan_published`
 - `task_assigned`
 - `implementation_started`
 - `implementation_progress`
@@ -58,6 +78,7 @@ Good event types:
 - `review_failed`
 - `review_passed`
 - `verification_passed`
+- `knowledge_base_updated`
 - `rollout_ready`
 
 ## Curated Read Model Rules
@@ -66,6 +87,7 @@ Good event types:
 
 - what the feature is
 - which phase it is in
+- which primary packet is current for each phase
 - who owns which tasks
 - what is blocked
 - what has been approved

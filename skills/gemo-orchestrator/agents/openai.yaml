@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Orchestrator"
-  short_description: "Brainstorm, plan, and orchestrate Gemo features"
-  default_prompt: "Use $gemo-orchestrator to brainstorm this Gemo feature, map the impacted repos, and prepare the implementation workflow."
+  short_description: "Brainstorm, groom, and orchestrate Gemo delivery"
+  default_prompt: "Use $gemo-orchestrator to choose the right mode for this Gemo feature, start in brainstorm mode when the scope is still forming, use Figma MCP if design input is provided, and produce the right packet for the current phase."
 
 policy:
   allow_implicit_invocation: true

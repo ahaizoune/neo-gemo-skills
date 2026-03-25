@@ -99,6 +99,10 @@ PY
 }
 
 render_template "$TEMPLATE_ROOT/feature-state.md" "$TARGET_DIR/feature-state.md"
+render_template "$TEMPLATE_ROOT/01-discovery.md" "$TARGET_DIR/01-discovery.md"
+render_template "$TEMPLATE_ROOT/02-grooming.md" "$TARGET_DIR/02-grooming.md"
+render_template "$TEMPLATE_ROOT/03-architecture.md" "$TARGET_DIR/03-architecture.md"
+render_template "$TEMPLATE_ROOT/04-execution-plan.md" "$TARGET_DIR/04-execution-plan.md"
 render_template "$TEMPLATE_ROOT/decisions.md" "$TARGET_DIR/decisions.md"
 render_template "$TEMPLATE_ROOT/reviews.md" "$TARGET_DIR/reviews.md"
 render_template "$TEMPLATE_ROOT/rollout.md" "$TARGET_DIR/rollout.md"
@@ -117,10 +121,10 @@ event = {
     "feature_slug": os.environ["FEATURE_SLUG"],
     "actor": "system",
     "role": "trace-scaffold",
-    "phase": "intake",
+    "phase": "discovery",
     "event_type": "feature_trace_initialized",
     "status": "completed",
-    "summary": "Initialized feature trace scaffold.",
+    "summary": "Initialized standard feature trace scaffold.",
     "repo": os.path.basename(os.environ["TARGET_REPO"]),
     "task_id": None,
     "artifact_path": "docs/features/{}/agentic".format(os.environ["FEATURE_SLUG"]),

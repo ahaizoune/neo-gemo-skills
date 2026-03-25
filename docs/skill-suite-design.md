@@ -3,7 +3,8 @@
 ## Goal
 
 Create a versioned skill suite that gives Gemo a single orchestration entry point while keeping
-specialist execution, review, traceability, and cmux collaboration explicit and reusable.
+product brainstorming, specialist execution, review, traceability, and cmux collaboration explicit
+and reusable.
 
 ## Primary Design Decisions
 
@@ -21,10 +22,13 @@ specialist execution, review, traceability, and cmux collaboration explicit and 
 
 Supporting skills:
 
+- `gemo-product-manager`
 - `gemo-architect`
 - implementation specialists by discipline
 - reviewers by discipline and security
 - `gemo-foundation` as shared doctrine
+
+The orchestrator can start in brainstorm mode before formal grooming and architecture approval.
 
 ### 3. Hybrid Codex / Claude model
 
@@ -42,6 +46,7 @@ Per feature, persist:
 - decision log
 - review log
 - rollout log
+- standardized phase packets for discovery, grooming, architecture, and execution planning
 
 ### 5. Strict task-control authority
 
@@ -64,6 +69,7 @@ Per feature, persist:
 ### Entry and design
 
 - `gemo-orchestrator`
+- `gemo-product-manager`
 - `gemo-architect`
 
 ### Implementation

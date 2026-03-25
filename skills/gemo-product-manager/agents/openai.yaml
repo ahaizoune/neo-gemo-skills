@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Product Manager"
+  short_description: "Discover, shape, and scope Gemo product changes"
+  default_prompt: "Use $gemo-product-manager to run a disciplined product discovery session for this Gemo feature, use Figma MCP if I provide a design, compare current versus desired workflow, propose a coherent MVP slice, and produce a discovery packet before formal grooming."
+
+policy:
+  allow_implicit_invocation: true

@@ -5,7 +5,14 @@
 ### `gemo-orchestrator`
 
 - user-facing entry point for feature delivery
+- can begin in collaborative brainstorm mode before formal grooming
 - owns grooming, task graph, approval flow, task control, acceptance, and final synthesis
+
+### `gemo-product-manager`
+
+- user-facing or delegated discovery specialist
+- owns problem framing, feature and sub-feature mapping, Figma-derived flow extraction, MVP
+  shaping, and product open questions before formal grooming
 
 ### `gemo-architect`
 

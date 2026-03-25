@@ -8,6 +8,7 @@ and Gemo-specific cmux collaboration guidance.
 This repository defines a skill suite for feature delivery across the Gemo workspace:
 
 - `gemo-orchestrator` as the main entry point
+- `gemo-product-manager` for product brainstorming and Figma-first feature shaping
 - `gemo-architect` for architecture framing and design review
 - discipline specialists for backend, React, extension, devops, and Retool work
 - reviewer skills for design, security, and implementation quality
@@ -33,6 +34,7 @@ repository instead of being maintained as separate authorities.
 
 - `gemo-foundation`
 - `gemo-orchestrator`
+- `gemo-product-manager`
 - `gemo-architect`
 - `gemo-backend`
 - `gemo-react`
@@ -57,6 +59,10 @@ neo-gemo-skills/
 │   └── scaffold_feature_trace.sh
 ├── templates/
 │   └── feature-trace/
+│       ├── 01-discovery.md
+│       ├── 02-grooming.md
+│       ├── 03-architecture.md
+│       ├── 04-execution-plan.md
 │       ├── feature-state.md
 │       ├── decisions.md
 │       ├── reviews.md
@@ -64,6 +70,7 @@ neo-gemo-skills/
 └── skills/
     ├── gemo-foundation/
     ├── gemo-orchestrator/
+    ├── gemo-product-manager/
     ├── gemo-architect/
     ├── gemo-backend/
     ├── gemo-react/
@@ -115,6 +122,10 @@ This creates:
 ```text
 docs/features/<feature-slug>/agentic/
 ├── feature-state.md
+├── 01-discovery.md
+├── 02-grooming.md
+├── 03-architecture.md
+├── 04-execution-plan.md
 ├── decisions.md
 ├── events.jsonl
 ├── reviews.md
@@ -123,6 +134,13 @@ docs/features/<feature-slug>/agentic/
 
 ## Operating Model
 
+- The orchestrator can start in collaborative brainstorm mode before formal grooming begins.
+- Brainstorm mode combines product-manager and architect behavior and stays interactive with the
+  user.
+- When Figma input is available, use Figma MCP to derive candidate features, sub-features, flows,
+  and states before locking scope.
+- Every feature should use the same canonical document set and packet formats under
+  `docs/features/<feature-slug>/agentic/`.
 - The orchestrator owns task control, acceptance, and promotion to rollout.
 - Peer-to-peer communication is disallowed by default.
 - Exception: narrowly scoped clarification may happen directly, but it must be linked to a feature

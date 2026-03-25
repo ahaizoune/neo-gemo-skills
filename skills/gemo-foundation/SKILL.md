@@ -33,6 +33,10 @@ Load only the references you need:
 Every non-trivial feature should maintain:
 
 - `feature-state.md`
+- `01-discovery.md`
+- `02-grooming.md`
+- `03-architecture.md`
+- `04-execution-plan.md`
 - `decisions.md`
 - `events.jsonl`
 - `reviews.md`
