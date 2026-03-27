@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo React Reviewer"
   short_description: "Review frontend changes for risk and quality"
-  default_prompt: "Use $gemo-react-reviewer to review the frontend changes for correctness, state integrity, and accessibility."
+  default_prompt: "Use $gemo-react-reviewer to review the frontend changes with findings first, applying expert expectations for Next.js App Router, React 18/19, React Query, NextAuth and cookie-backed sessions, Zustand, forms and validation, rich text, accessibility, observability, and user-flow integrity in the scorecard and candidate portal."
 
 policy:
   allow_implicit_invocation: true

@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Extension Reviewer"
   short_description: "Review extension changes for runtime safety"
-  default_prompt: "Use $gemo-extension-reviewer to review the extension changes for message safety, permissions, and runtime correctness."
+  default_prompt: "Use $gemo-extension-reviewer to review the extension changes with findings first, focusing on message safety, permissions, runtime correctness, and verification gaps."
 
 policy:
   allow_implicit_invocation: true

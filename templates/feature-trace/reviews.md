@@ -19,12 +19,16 @@ Use this file for orchestrator and reviewer findings.
 - Scope:
 - Summary:
 - Verification Performed:
+- Rollout Blocking: `yes/no`
 
 ### Findings
 
 - Severity:
+- Confidence:
 - File:
 - Issue:
+- Consequence:
+- Evidence / Missing Evidence:
 - Required Action:
 - Status:
 
@@ -33,6 +37,7 @@ Use this file for orchestrator and reviewer findings.
 - Status:
 - Rework Required:
 - Follow-up Owner:
+- Residual Risk:
 
 ## Sign-Off Matrix
 

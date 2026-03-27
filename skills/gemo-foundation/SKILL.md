@@ -14,8 +14,10 @@ Load only the references you need:
 - Delivery lifecycle: [references/delivery-lifecycle.md](references/delivery-lifecycle.md)
 - Traceability model: [references/traceability-model.md](references/traceability-model.md)
 - cmux topology and protocol: [references/cmux-topology-and-protocol.md](references/cmux-topology-and-protocol.md)
+- Claude worker prompt schema: [references/claude-worker-prompt-schema.md](references/claude-worker-prompt-schema.md)
 - Role matrix: [references/role-matrix.md](references/role-matrix.md)
 - Review standards: [references/review-standards.md](references/review-standards.md)
+- Review methodology: [references/review-methodology.md](references/review-methodology.md)
 
 ## Working Rules
 
@@ -23,7 +25,18 @@ Load only the references you need:
 - Treat `gemo-architect` as the architecture-first sibling that the orchestrator can emulate or
   explicitly invoke.
 - Use Codex as orchestrator, architecture synthesizer, and acceptance authority.
-- Use Claude primarily for low-level implementation workers.
+- Use Claude as the default low-level implementation worker runtime for delegated coding tasks
+  unless the user explicitly overrides the worker model.
+- Launch delegated Claude workers in YOLO mode by default via
+  `--dangerously-skip-permissions` unless the user explicitly asks for a stricter permission model.
+- Do not treat workspace creation, pane creation, surface creation, sidebar metadata, or
+  `claude-hook` status updates as equivalent to launching a worker.
+- A delegated implementation task is not `in_progress` until its assigned cmux surface has a live
+  worker process and launch verification is recorded in the feature trace.
+- Worker launch verification starts the supervision phase. The orchestrator must keep checking each
+  delegated worker until the output is accepted, rejected, or blocked.
+- Delegated workers must not finish or block silently. They must notify the orchestrator when they
+  reach a meaningful checkpoint, become blocked, or reach result-ready state.
 - Do not allow peer-to-peer task control between specialist workers.
 - Persist feature trace artifacts in the feature's home repo under:
   `docs/features/<feature-slug>/agentic/`
@@ -49,4 +62,8 @@ When available, use the bundled scaffold script:
 Bundled cmux utilities:
 
 - `scripts/cmux-handoff.sh`
+- `scripts/cmux-check-claude-worker.sh`
+- `scripts/cmux-launch-claude-worker.sh`
+- `scripts/render-claude-worker-prompt.sh`
+- `scripts/cmux-worker-report.sh`
 - `scripts/cmux-validate-envelope.sh`

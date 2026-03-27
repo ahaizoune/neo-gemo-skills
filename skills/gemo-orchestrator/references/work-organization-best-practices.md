@@ -8,6 +8,9 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - one feature has one canonical `docs/features/<feature-slug>/agentic/` folder
 - one feature has one current phase at a time
 - one task has one owner and one reviewer path
+- one delegated implementation task has one owning worker surface, one recorded launch state, and
+  one recorded supervision state, and one worker notification contract
+- one review handoff has one explicit reviewer-agent set and one recorded reviewer status
 - the orchestrator is the authority for task control and acceptance
 
 ## Organization Rules
@@ -24,6 +27,15 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - do not move into the next phase until the current phase packet is updated
 - do not assign implementation work before the execution plan exists
 - do not start non-trivial implementation before the human gate is satisfied
+- do not mark delegated implementation work `in_progress` until the worker process is live on the
+  assigned cmux surface
+- do not leave delegated implementation work unsupervised after launch verification
+- do not let delegated workers finish or block silently; they must notify the orchestrator when
+  they need the next decision
+- do not leave result-ready delegated work parked as generic `in_progress`; move it to acceptance,
+  rework, or reviewer handoff immediately
+- do not let the orchestrator stand in for the backend, frontend, security, extension, devops, or
+  retool reviewer skill on non-trivial delegated work
 - do not declare rollout readiness before reviewer status and verification evidence are explicit
 
 ## Identifier Conventions
@@ -38,8 +50,12 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 ## Update Discipline
 
 - update `feature-state.md` whenever owners, blockers, approvals, or phase change
+- update `feature-state.md` and `events.jsonl` when a delegated task becomes
+  `attention_required`, `awaiting_acceptance`, accepted, or routed to rework
 - append to `events.jsonl` in the same work step as the change it records
 - update the phase packet before summarizing the phase as complete
+- if delegated work collapses back to the orchestrator, record the reassignment before the
+  implementation continues
 - update the product knowledge base when the feature changes platform capability or workflow shape
 
 ## Communication Discipline
@@ -47,3 +63,7 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - ask the smallest set of high-value questions needed to unblock the next coherent decision
 - separate findings from summaries
 - keep peer-to-peer specialist communication exceptional, narrow, and logged back into the trace
+- require worker-to-orchestrator notifications for result-ready or blocked states so the next step
+  can advance without user intervention
+- require orchestrator-to-reviewer and reviewer-to-orchestrator handoffs for formal review so the
+  orchestrator stays the connector between developer and reviewer rather than replacing either role

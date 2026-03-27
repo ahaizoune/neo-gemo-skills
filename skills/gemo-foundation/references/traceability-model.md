@@ -44,6 +44,11 @@ docs/features/<feature-slug>/agentic/
 
 Every meaningful state transition should append one JSON line.
 
+Reviewer-agent completion is a meaningful state transition. Its source of truth is the reviewer
+agent final completion notification from the Codex subagent runtime, not a cmux worker envelope,
+and the orchestrator must mirror that completion into the workspace collaboration surface as well
+as the trace artifacts.
+
 Recommended fields:
 
 - `ts`
@@ -69,12 +74,22 @@ Good event types:
 - `architecture_decision_approved`
 - `human_gate_approved`
 - `execution_plan_published`
+- `worker_launch_requested`
+- `worker_launch_verified`
+- `worker_launch_failed`
+- `worker_attention_required`
+- `worker_result_ready`
+- `worker_output_accepted`
 - `task_assigned`
+- `task_reassigned`
 - `implementation_started`
 - `implementation_progress`
 - `blocker_raised`
 - `clarification_requested`
+- `rework_requested`
 - `review_requested`
+- `review_agent_requested`
+- `review_agent_completed`
 - `review_failed`
 - `review_passed`
 - `verification_passed`
@@ -89,6 +104,9 @@ Good event types:
 - which phase it is in
 - which primary packet is current for each phase
 - who owns which tasks
+- which delegated tasks have a live worker launch
+- which delegated tasks are awaiting acceptance, rework, or reviewer handoff
+- which reviewer agents are active and which task they are reviewing
 - what is blocked
 - what has been approved
 - what remains before rollout

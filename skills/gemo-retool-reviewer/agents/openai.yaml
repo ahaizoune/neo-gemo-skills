@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Retool Reviewer"
   short_description: "Review Retool component changes for quality"
-  default_prompt: "Use $gemo-retool-reviewer to review the Retool component changes for contract alignment and maintainability."
+  default_prompt: "Use $gemo-retool-reviewer to review the Retool component changes with findings first, applying expert expectations for Retool custom-component model/event contracts, manifest stability, embedded host behavior, degraded-data resilience, runtime usability, and verification quality."
 
 policy:
   allow_implicit_invocation: true

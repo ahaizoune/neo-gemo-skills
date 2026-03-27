@@ -52,8 +52,17 @@ Describe the business goal, user impact, and definition of success.
 
 - Orchestrator:
 - Architect:
-- Specialists:
+- Active Execution Tasks:
+- Planned Execution Tasks:
 - Reviewers:
+
+## Live Worker Launches
+
+- Task:
+- Worker Model:
+- Workspace / Surface:
+- Launch State:
+- Supervision State:
 
 ## Current Risks
 

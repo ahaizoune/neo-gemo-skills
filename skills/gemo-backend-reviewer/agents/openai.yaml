@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Backend Reviewer"
   short_description: "Review backend changes for risk and quality"
-  default_prompt: "Use $gemo-backend-reviewer to review the backend changes for correctness, security, and rollout risk."
+  default_prompt: "Use $gemo-backend-reviewer to review the backend changes with findings first, applying expert expectations for FastAPI, Starlette, SlowAPI, SQLAlchemy 2 async, PostgreSQL, Alembic, Pydantic v2, Redis/RQ, httpx integrations, auth and token boundaries, observability, state-machine integrity, and rollout safety."
 
 policy:
   allow_implicit_invocation: true
