@@ -48,7 +48,17 @@ Required fields:
 - `Repo / Scope`
 - `Worktree / Branch`
 
-### 2. Task Goal
+### 2. Execution Control
+
+Required instructions:
+
+- start in plan mode before any edits
+- read the required files and inspect the highest-risk invariants first
+- produce a concise execution plan scoped to the owned task
+- stop at the execution approval gate before making code changes
+- treat contract gaps or runtime blockers as immediate escalation points
+
+### 3. Task Goal
 
 Required fields:
 
@@ -60,7 +70,7 @@ Optional:
 
 - `Current Blockers` from `feature-state.md` when they materially constrain the implementation
 
-### 3. Files To Read First
+### 4. Files To Read First
 
 Required:
 
@@ -74,7 +84,7 @@ Conditional:
 - `events.jsonl` when recent task events exist
 - source files named by the latest review delta when available
 
-### 4. Relevant Decisions
+### 5. Relevant Decisions
 
 Required:
 
@@ -84,7 +94,7 @@ Recommended shape:
 
 - one line per decision with `Decision ID`, `Phase`, chosen option, and consequence
 
-### 5. Recent Review Delta
+### 6. Recent Review Delta
 
 Required when review history exists for the task:
 
@@ -93,7 +103,9 @@ Required when review history exists for the task:
 - outcome status
 - summary
 - open findings only
-- per-finding `Severity`, `Issue`, `Required Action`, and `File`
+- per-finding `Severity`, `Blocker Family`, `Family Status`, `Issue`, `Violated Invariant /
+  Expectation`, `Weak Enforcement Point / Root Cause`, `Strongest Proof Path`, `Required Action`,
+  and `File` when available
 
 Rules:
 
@@ -102,7 +114,7 @@ Rules:
   rework
 - do not paste the whole review log
 
-### 6. Recent Event Context
+### 7. Recent Event Context
 
 Required:
 
@@ -117,7 +129,7 @@ Rules:
 - default to the latest six events for the task
 - omit unrelated feature events
 
-### 7. Implementation Doctrine
+### 8. Implementation Doctrine
 
 Required:
 
@@ -126,6 +138,7 @@ Required:
 Recommended extraction:
 
 - `Working Rules`
+- `Output Contract`
 - `Review Loop Prevention`
 - `Validation And Handoff`
 - `Delivery Expectations`
@@ -137,29 +150,51 @@ Rules:
 - render only the sections that materially guide implementation
 - do not duplicate orchestration-only rules here
 
-### 8. Validation Required
+### 9. Reviewer Acceptance Contract
+
+Required when reviewer skills are declared for the task:
+
+- selected sections from the required reviewer skill(s) named in the execution plan
+
+Recommended extraction:
+
+- `Review Loop Prevention`
+- `Output Contract`
+- `Detailed Feedback Contract`
+- `Rework Handoff Contract`
+- `Review Contract`
+
+Rules:
+
+- include only the reviewer skills required for the current task
+- omit sections that do not exist in a given reviewer skill
+- use the reviewer skill as the source of truth for what will later block acceptance
+- keep this section implementation-oriented; do not include reviewer runtime metadata here
+
+### 10. Validation Required
 
 Required:
 
 - task `Exit Evidence`
 - review-driven regression obligations from the latest open findings
 
-### 9. Escalation Contract
+### 11. Escalation Contract
 
 Required:
 
 - `Retry Window`
 - `Escalation Condition`
 
-### 10. First Response
+### 12. First Response
 
 Required instructions:
 
 - acknowledge scope
 - name the first files or invariants to inspect
+- provide the initial implementation plan
 - report any immediate blocker if one exists
 
-### 11. Collaboration Note
+### 13. Collaboration Note
 
 Required:
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Gemo Skill Foundry"
+  short_description: "Create and evolve world-class Gemo skills"
+  default_prompt: "Use $gemo-skill-foundry to turn my short brief into a new or upgraded Gemo skill by scanning the real repo, benchmarking the role against trusted external sources, drafting the skill artifacts, asking for a quick review, then validating and installing the result."
+
+policy:
+  allow_implicit_invocation: true

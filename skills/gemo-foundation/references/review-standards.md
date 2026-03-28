@@ -45,6 +45,8 @@ Use this reference from reviewer skills and from the orchestrator when validatin
   waived
 - `medium` findings should be resolved unless there is a documented reason to defer
 - `low` findings may be deferred if tracked clearly
+- any deferred finding that creates technical debt must be converted into an explicit debt record
+  with an owner, rationale, rollout posture, and retirement trigger
 
 ## Findings Format
 
@@ -66,6 +68,8 @@ Good reviews also note:
 - whether the issue is design-level, implementation-level, or verification-level
 - whether the issue is new, still open from a prior round, or part of the same blocker family
 - which adjacent surfaces were checked when the risk depended on a shared boundary
+- whether the issue must be fixed now, may be deferred as tracked debt, or requires human
+  acceptance before rollout
 
 ## No-Findings Rule
 
@@ -81,6 +85,8 @@ If no findings are present:
 - call out missing manual verification when runtime behavior is risky
 - distinguish proven behavior from assumed behavior
 - ask for proof at the real boundary that creates the risk, not only at a mocked or narrower seam
+- when debt is deferred, ask for the smallest evidence that supports the chosen debt posture and
+  retirement trigger
 
 ## Review Loop Prevention
 

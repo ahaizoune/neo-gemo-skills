@@ -63,6 +63,15 @@ Retool kanban custom component package.
 
 Embed-oriented surface with smaller scope than the main product apps.
 
+### `neo-gemo-skills`
+
+Canonical skill-suite repo.
+
+- skill definitions and `agents/openai.yaml`
+- shared architecture, traceability, and cmux doctrine
+- skill authoring ontology and source policy
+- install and sync scripts for `~/.codex/skills`
+
 ## Specialist Ownership Defaults
 
 - `gemo-backend`: `neo-gemo-platform`
@@ -70,5 +79,6 @@ Embed-oriented surface with smaller scope than the main product apps.
 - `gemo-extension`: `gemo-sourcing-extension`
 - `gemo-devops`: `gemo-devops`
 - `gemo-retool`: `retool-json-renderer`, `retool-kanban-ui`
+- `gemo-skill-foundry`: `neo-gemo-skills`
 
 Use `gemo-architect` when a feature crosses repo or domain boundaries.

@@ -16,6 +16,8 @@ Append architecture and delivery decisions in chronological order.
 - Options Considered:
 - Chosen Option:
 - Tradeoffs:
+- Debt Impact:
 - Consequences:
+- Retirement Trigger:
 - Supersedes:
 - Follow-up:

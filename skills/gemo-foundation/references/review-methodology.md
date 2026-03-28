@@ -54,6 +54,11 @@ Use this reference when a reviewer needs a consistent process, not only a checkl
   surfaces are involved
 - escalate to architect or orchestrator when the issue appears structural, not local
 - escalate rollout blocking when confidence is high and impact is material
+- when the same task reaches more than 3 review rounds and blocker families remain open, escalate
+  back to the human decision-maker instead of expecting another autonomous rework loop to continue
+- when escalating back to the human after the round cap, summarize the latest reviewer conclusions
+  and consolidate the still-open findings into stable blocker families instead of forwarding raw
+  repeated findings from every review round
 
 ## Anti-Patterns
 

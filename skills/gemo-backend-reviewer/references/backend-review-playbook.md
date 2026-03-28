@@ -26,6 +26,23 @@ Focus on:
 - observability for risky flows
 - state-machine integrity for pipeline, interviews, deliberation, and offers
 - integration safety for Calendly, Google Calendar, Slack, and webhook flows
+- likely future regression vectors when the same pattern is repeated elsewhere in the monorepo
+
+## Source-Of-Truth Zones
+
+Before concluding a substantial review, orient against these repo surfaces:
+
+- `apps/gemforge/src/gemforge`
+- `apps/gemhub/src/gemhub`
+- `libs/core/src/core`
+- `libs/shared/src/shared`
+- `libs/notification/src/notification`
+- `migrations/`
+- `scripts/`
+- root and app-local `tests/`
+
+Use the changed files to choose where to look next, but do not assume the diff is the only surface
+that matters when a shared invariant is involved.
 
 ## FastAPI / Starlette / SlowAPI Must-Haves
 
@@ -127,6 +144,33 @@ Focus on:
   point that should have changed instead
 - group same-root-cause sibling issues together and say whether a blocker is new, still open, or
   resolved from prior rounds
+
+## Detailed Finding Shape
+
+For each material finding, try to state:
+
+- what invariant or framework expectation is broken
+- why it is unsafe in this concrete backend stack
+- what the runtime, data, security, or rollout consequence is
+- where the likely root cause or weak enforcement point lives
+- which sibling surfaces probably share the same defect family
+- what stronger remediation direction would reduce recurrence
+- what test, migration rehearsal, or operational verification would prove the fix
+
+## Proactive Prevention Lenses
+
+Look beyond the changed line when the pattern suggests likely future defects:
+
+- local auth checks instead of central policy enforcement
+- route-local validation or permission logic copied across handlers
+- AsyncSession usage that works in one request path but is unsafe under concurrency or worker reuse
+- migrations that technically apply but leave the next schema change or rollback brittle
+- worker code that passes happy-path tests but lacks idempotency, retry clarity, or side-effect
+  guards
+- provider integrations that handle the current path but still lack reusable timeout, verification,
+  or error-mapping discipline
+- logging or Sentry coverage that would make the next production defect hard to diagnose
+- fixes that close one state transition while sibling transitions still bypass the same invariant
 
 Look hard at:
 

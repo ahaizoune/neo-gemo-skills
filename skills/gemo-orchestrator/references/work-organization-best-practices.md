@@ -8,10 +8,13 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - one feature has one canonical `docs/features/<feature-slug>/agentic/` folder
 - one feature has one current phase at a time
 - one task has one owner and one reviewer path
+- one feature has one visible technical-debt register that stays current during execution
 - one delegated implementation task has one owning worker surface, one recorded launch state, and
   one recorded supervision state, and one worker notification contract
 - one review handoff has one explicit reviewer-agent set and one recorded reviewer status
 - the orchestrator is the authority for task control and acceptance
+- formal specialist review belongs to reviewer agents; the orchestrator owns review coordination and
+  acceptance state
 
 ## Organization Rules
 
@@ -36,7 +39,11 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
   rework, or reviewer handoff immediately
 - do not let the orchestrator stand in for the backend, frontend, security, extension, devops, or
   retool reviewer skill on non-trivial delegated work
+- do not let technical debt stay implicit in review summaries, residual-risk notes, or verbal
+  “follow-up later” promises
 - do not declare rollout readiness before reviewer status and verification evidence are explicit
+- do not let a task churn through more than 3 autonomous review rounds; freeze it and return to the
+  human for a decision before round 4
 
 ## Identifier Conventions
 
@@ -45,6 +52,7 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - decision IDs: `D01`, `D02`, `D03`, ...
 - review IDs: `R01`, `R02`, `R03`, ...
 - blocker IDs: `B01`, `B02`, `B03`, ...
+- debt IDs: `TD01`, `TD02`, `TD03`, ...
 - open question IDs: `Q01`, `Q02`, `Q03`, ...
 
 ## Update Discipline
@@ -52,6 +60,10 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - update `feature-state.md` whenever owners, blockers, approvals, or phase change
 - update `feature-state.md` and `events.jsonl` when a delegated task becomes
   `attention_required`, `awaiting_acceptance`, accepted, or routed to rework
+- update `feature-state.md`, `reviews.md`, and `events.jsonl` when the autonomous review-round
+  limit is exceeded and the task returns to the human for direction
+- update `feature-state.md`, `reviews.md`, `decisions.md`, `rollout.md`, and `events.jsonl` when
+  debt is recorded, accepted, materially changed, or retired
 - append to `events.jsonl` in the same work step as the change it records
 - update the phase packet before summarizing the phase as complete
 - if delegated work collapses back to the orchestrator, record the reassignment before the
@@ -63,7 +75,18 @@ Use this reference when the orchestrator needs to keep feature delivery discipli
 - ask the smallest set of high-value questions needed to unblock the next coherent decision
 - separate findings from summaries
 - keep peer-to-peer specialist communication exceptional, narrow, and logged back into the trace
+- separate coordination-level readiness checks from formal specialist review; do not blur those two
+  control steps
+- when debt is surfaced, classify it explicitly as fix-now, tracked debt, or human decision
+  required; do not leave the debt posture implied
 - require worker-to-orchestrator notifications for result-ready or blocked states so the next step
   can advance without user intervention
 - require orchestrator-to-reviewer and reviewer-to-orchestrator handoffs for formal review so the
   orchestrator stays the connector between developer and reviewer rather than replacing either role
+- when asking the human to accept or defer debt, present the debt ID, source task, reason, rollout
+  posture, retirement trigger, and practical alternatives
+- require a human decision when unresolved blocker families survive 3 review rounds on the same
+  task; do not silently keep the loop running
+- when handing the task back to the human after the 3-round cap, provide the latest review summary
+  and the remaining issue families explicitly so the decision can be made from the current state
+  rather than from raw review history

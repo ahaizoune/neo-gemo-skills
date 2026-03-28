@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Backend"
   short_description: "Backend implementation for GemForge and GemHub"
-  default_prompt: "Use $gemo-backend to implement the backend portion of this Gemo feature in neo-gemo-platform."
+  default_prompt: "Use $gemo-backend to implement the backend portion of this Gemo feature in neo-gemo-platform, grounding the work in the real app and library boundaries while preserving contract, migration, worker, auth, and rollout safety."
 
 policy:
   allow_implicit_invocation: true

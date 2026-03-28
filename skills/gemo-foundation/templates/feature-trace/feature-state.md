@@ -69,12 +69,25 @@ Describe the business goal, user impact, and definition of success.
 - Risk:
 - Mitigation:
 
+## Technical Debt Register
+
+- Debt ID:
+- Source Task / Review:
+- Type:
+- Status:
+- Owner:
+- Rollout Posture:
+- Reason:
+- Retirement Trigger:
+- Human Decision / Approval:
+
 ## Current Blockers
 
 - Blocker:
 - Owner:
 - Retry Window:
 - Escalation Condition:
+- Human Decision Required:
 
 ## Verification Matrix
 
@@ -93,6 +106,7 @@ Describe the business goal, user impact, and definition of success.
 - Architecture Approval:
 - Reviewer Approval:
 - Human Approval:
+- Technical Debt Acceptance:
 - Product Knowledge Base Updated:
 
 ## Latest Summary

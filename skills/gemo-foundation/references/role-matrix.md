@@ -19,6 +19,14 @@
 - user-facing or delegated design specialist
 - owns architecture options, tradeoffs, repo impact analysis, and implementation-shaping decisions
 
+### `gemo-skill-foundry`
+
+- user-facing skill-suite evolution specialist for `neo-gemo-skills`
+- owns skill creation, skill upgrades, ontology refresh, suite-doc synchronization, and
+  skill-authoring workflow control
+- scans the actual repo and target stacks, benchmarks the role externally, and drives the
+  draft-review-validate-install loop for new or upgraded skills
+
 ## Implementation Specialists
 
 ### `gemo-backend`
@@ -29,7 +37,7 @@
 ### `gemo-react`
 
 - primary repos: `neo-gemo-talent-platform`, `neo-gemo-scorecard`, `gemforge-embed`
-- focus: Next.js, App Router, React UI, client/server flow
+- focus: Next.js, App Router, SSR/client composition, hydration, and performance-aware React UI
 
 ### `gemo-extension`
 
@@ -39,7 +47,8 @@
 ### `gemo-devops`
 
 - primary repo: `gemo-devops`
-- focus: Pulumi, AWS, Cloudflare, deployment shape, secrets, runtime config
+- focus: Python Pulumi IaC, AWS platform services, Cloudflare DNS, cost optimization, security,
+  monitoring, and deployment automation
 
 ### `gemo-retool`
 

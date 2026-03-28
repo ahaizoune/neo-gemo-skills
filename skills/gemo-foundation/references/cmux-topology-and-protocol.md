@@ -23,15 +23,65 @@ The installed local `cmux` build currently supports:
 - one `cmux workspace` per feature
 - orchestrator surface is the anchor surface
 - keep the anchor pane visible
+- the orchestrator pane is the main pane for the workspace and must remain the visible control
+  plane rather than being repurposed for docs, tests, logs, or specialist work
 - use one right lane for browser/docs as needed
 - use one bottom lane for debug/test/log surfaces
 - do not create extra splits casually; reuse panes via `new-surface --pane ...`
+
+## Primitive Mapping
+
+- `cmux new-workspace` creates the feature workspace and its initial anchor surface
+- `cmux new-split <left|right|up|down> --surface <anchor-surface>` is the preferred way to create
+  the structural right or bottom lane from a known anchor surface
+- `cmux new-pane --direction <left|right|up|down> --workspace <workspace>` is acceptable when
+  automation only has workspace context and no reliable anchor surface ref yet
+- `cmux new-surface --pane <pane>` is the preferred way to add more terminal or browser tabs into
+  an existing lane without changing the layout
+- `cmux rename-tab --surface <surface> <title>` is the canonical way to normalize surface titles
+  after creation
+- the local CLI does not expose `split-pane`; use `new-split`, `new-pane`, and `new-surface`
+
+## Pane And Surface Creation Protocol
+
+- create the feature workspace once with `cmux new-workspace`
+- normalize the initial anchor surface title to `orchestrator` as soon as the workspace is created
+- preserve the anchor pane as the main pane for the life of the workspace; do not move the
+  orchestrator surface out of it or hide the control loop behind secondary tabs in that pane
+- create the right lane once from the anchor surface when docs, browser, or visual verification is
+  needed
+- create the bottom lane once from the anchor surface when tests, logs, debug probes, or one-shot
+  validation need a dedicated visible lane
+- after the structural panes exist, open later work into those lanes with `cmux new-surface --pane`
+  instead of creating more panes
+- do not open specialist, browser, or debug surfaces into the orchestrator pane once the durable
+  lanes exist unless the human explicitly wants a temporary exception
+- create an extra pane only when the right and bottom lanes are both already serving durable roles
+  and another always-visible lane is required; record the reason in the execution plan before doing
+  it
+- when a surface is created in the wrong pane, fix it with `move-surface` or `drag-surface-to-split`
+  instead of normalizing the mistake into a new layout convention
+
+## Naming Convention
+
+- workspace title: use the feature slug or `FEATURE_ID feature-slug`; keep it stable for the life
+  of the feature
+- anchor surface title: `orchestrator`
+- anchor pane role: `main`
+- right-lane default titles: `docs`, `browser-verify`, `figma`
+- bottom-lane default titles: `tests`, `logs`, `debug`
+- specialist surface titles: use a stable lowercase hyphenated form of `task-id + role`, for
+  example `t03-backend-auth` or `ip-exec-01-frontend-portal`
+- keep titles unique within a workspace; avoid ambiguous titles like `backend`, `backend-2`, or
+  repeated `terminal`
+- rename surfaces immediately after creation when the default title is too generic for the worker
+  launcher and checker scripts to resolve safely
 
 ## Role Layout
 
 Recommended feature workspace layout:
 
-- anchor pane: orchestrator or architect
+- anchor pane: orchestrator main pane
 - right pane: browser / docs / visual verification
 - bottom pane: debug, tests, logs, one-shot validation
 - additional terminal surfaces in existing panes for specialists
@@ -78,10 +128,17 @@ Recommended feature workspace layout:
   inspection is acceptable when deeper context is needed.
 - Canonical supervision states are:
   - `running`: no visible interactive gate; task remains `in_progress`
+  - `awaiting_plan_approval`: Claude completed the required initial plan and is waiting at the
+    execution gate before any edits
   - `attention_required`: Claude is waiting on an approval or other interactive prompt
   - `awaiting_acceptance`: Claude reached the `accept edits on` result gate and is waiting for
     orchestrator review
   - `unknown`: no trustworthy classification; inspect the live surface directly
+- Implementation workers should begin in plan mode before editing. A plan gate right after launch
+  is expected behavior, not a worker defect.
+- When a worker is `awaiting_plan_approval`, route the plan to the human or orchestrator decision
+  path, keep the task out of ordinary implementation status until approval, and only then allow
+  edits to begin.
 - When a worker is `attention_required`, surface it immediately in sidebar metadata, logs, and the
   feature trace. Treat it as blocked until the prompt is resolved.
 - When a worker is `awaiting_acceptance`, stop treating the task as ordinary `in_progress` work.
@@ -188,6 +245,16 @@ Recommended default:
 cmux identify --json
 cmux tree --json
 cmux new-workspace --cwd /repo --command "claude -n orchestrator --dangerously-skip-permissions"
+main="$CMUX_SURFACE_ID"
+cmux rename-tab --surface "$main" "orchestrator"
+cmux new-split right --surface "$main"
+cmux new-split down --surface "$main"
+# inspect pane refs before opening more surfaces into the durable lanes
+cmux tree --json
+cmux new-surface --pane pane:<right-pane-ref>
+cmux new-surface --type browser --pane pane:<right-pane-ref> --url http://localhost:3000
+cmux rename-tab --surface surface:<docs-surface-ref> "docs"
+cmux rename-tab --surface surface:<browser-surface-ref> "browser-verify"
 cmux respawn-pane --surface surface:21 --command "cd /repo && claude -n backend-auth --dangerously-skip-permissions"
 cmux workspace-action --help
 cmux tab-action --help

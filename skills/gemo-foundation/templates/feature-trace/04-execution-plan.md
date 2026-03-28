@@ -13,6 +13,7 @@
 - Delivery Shape:
 - Cross-Repo Dependencies:
 - Reviewer Strategy:
+- Debt Posture:
 
 ## Task Template
 
@@ -39,6 +40,10 @@
 - Result-Ready Detection:
 - Next-Step Trigger:
 - Depends On:
+- Debt Capture Trigger:
+- Debt Disposition Rule:
+- Deferred Debt Owner:
+- Debt Retirement Trigger:
 - Reviewer:
 - Reviewer Agent Skills:
 - Review Launch Trigger:
@@ -54,7 +59,13 @@
 
 - Workspace Name:
 - Anchor Surface:
+- Main Pane Preservation Rule:
+- Pane Creation Sequence:
+- Pane Reuse Rule:
+- Extra Pane Trigger / Approval:
 - Specialist Surfaces:
+- Surface Naming Convention:
+- Surface Title Map:
 - Surface-To-Task Map:
 - Launch Strategy:
 - Launch Verification:
@@ -82,3 +93,11 @@
 - Risk:
 - Mitigation:
 - Owner:
+
+## Technical Debt Control
+
+- Fix-Now Debt Threshold:
+- Debt Acceptance Trigger:
+- Debt Tracking Mechanism:
+- Human Decision Trigger:
+- Debt Review / Retirement Check:

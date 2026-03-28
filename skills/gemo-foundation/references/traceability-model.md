@@ -49,6 +49,11 @@ agent final completion notification from the Codex subagent runtime, not a cmux 
 and the orchestrator must mirror that completion into the workspace collaboration surface as well
 as the trace artifacts.
 
+When the orchestrator emits `human_decision_required` because the 3-round review cap was exceeded,
+the trace should capture enough decision support to avoid rereading the entire review history. The
+event summary and current-state documents should summarize the latest review outcomes and the
+remaining unresolved blocker families.
+
 Recommended fields:
 
 - `ts`
@@ -62,6 +67,7 @@ Recommended fields:
 - `summary`
 - `repo`
 - `task_id`
+- `debt_id`
 - `artifact_path`
 
 Good event types:
@@ -92,6 +98,10 @@ Good event types:
 - `review_agent_completed`
 - `review_failed`
 - `review_passed`
+- `technical_debt_recorded`
+- `technical_debt_accepted`
+- `technical_debt_retired`
+- `human_decision_required`
 - `verification_passed`
 - `knowledge_base_updated`
 - `rollout_ready`
@@ -107,6 +117,8 @@ Good event types:
 - which delegated tasks have a live worker launch
 - which delegated tasks are awaiting acceptance, rework, or reviewer handoff
 - which reviewer agents are active and which task they are reviewing
+- which technical debt items are active, who owns them, and whether they are rollout-blocking or
+  consciously accepted
 - what is blocked
 - what has been approved
 - what remains before rollout

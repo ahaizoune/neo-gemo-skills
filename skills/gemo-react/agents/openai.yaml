@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo React"
-  short_description: "React and Next.js implementation for Gemo"
-  default_prompt: "Use $gemo-react to implement the frontend portion of this Gemo feature in the affected Next.js app."
+  short_description: "Senior React/Next aligned to repo rules"
+  default_prompt: "Use $gemo-react to implement the frontend portion of this Gemo feature in the affected React or Next.js repo, and align the work with that repo's local .cursor conventions before choosing patterns for server/client boundaries, auth-state handling, forms, state, styling, and SSR or hydration behavior."
 
 policy:
   allow_implicit_invocation: true

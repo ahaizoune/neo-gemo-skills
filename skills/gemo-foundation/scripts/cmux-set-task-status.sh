@@ -75,6 +75,10 @@ if [[ -z "$ICON" || -z "$COLOR" ]]; then
       : "${ICON:=clock.fill}"
       : "${COLOR:=#6B7280}"
       ;;
+    planning|awaiting_plan_approval)
+      : "${ICON:=list.bullet.clipboard}"
+      : "${COLOR:=#8B5CF6}"
+      ;;
     in_progress)
       : "${ICON:=hammer.fill}"
       : "${COLOR:=#2563EB}"

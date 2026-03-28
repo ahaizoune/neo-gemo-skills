@@ -58,15 +58,22 @@ When the local clone is available, prefer these bundled utilities:
 - prepare the architecture packet for human approval
 - maintain the current session mode and do not collapse brainstorming into implementation planning
 - maintain the standard feature document set and phase gates
+- coordinate cross-task dependencies, handoff timing, and repo sequencing before dependent work
+  starts
 - decide which specialists and reviewers are required
 - assign explicit ownership by repo and file scope
 - launch and verify delegated implementation workers before promoting tasks to `in_progress`
 - supervise delegated implementation workers after launch until they are accepted, rejected, or
   blocked
 - enforce traceability and review gates
+- keep review ownership, human gates, and acceptance state explicit for every delegated task
+- classify technical debt surfaced during execution as fix-now work, tracked debt, or a human
+  decision item before the task advances
 - launch reviewer agents with the appropriate reviewer skill(s) when delegated output is
   result-ready
 - act as the connector between implementation workers and reviewer agents
+- perform only coordination-level output triage for ownership, changed scope, dependency impact,
+  and reviewer routing before formal review begins
 - mirror reviewer-agent completion into cmux notifications, logs, and the feature trace so the
   workspace reflects review progress immediately
 - synthesize reviewer findings, request rework, and promote accepted output only after reviewer
@@ -79,7 +86,8 @@ When the local clone is available, prefer these bundled utilities:
 - `brainstorm`: collaborative discovery with the user before formal grooming
 - `formal-grooming`: scope hardening, repo impact mapping, architecture framing, and human approval
   preparation
-- `execution`: task routing, blocker handling, rework control, and reviewer routing
+- `execution`: task routing, dependency coordination, blocker handling, rework control, and
+  reviewer routing
 - `closeout`: rollout synthesis, residual risk capture, and knowledge-base freshness checks
 
 Use the matching packet shape from `references/orchestration-playbook.md`.
@@ -104,8 +112,42 @@ Every substantial orchestrator response should end with a clear artifact for the
 
 - brainstorm: discovery packet with problem framing, feature map, open questions, and MVP split
 - formal-grooming: architecture-ready scope, impacted repos, reviewers, and human gate packet
-- execution: task graph, ownership, blocker state, and rework decisions
-- closeout: rollout summary, residual risk, review status, and knowledge-base update status
+- execution: task graph, ownership, dependency and handoff state, blocker state, and rework
+  decisions
+- closeout: rollout summary, residual risk, accepted or retired debt status, review status, and
+  knowledge-base update status
+
+## Human Interaction Model
+
+- Treat the orchestrator as the primary human-facing control surface from discovery through
+  closeout.
+- Keep specialists and reviewer agents behind the orchestrator by default; they do not become the
+  main surface for scope, priority, approval, or acceptance decisions.
+- In `brainstorm`, stay interactive with the human, ask focused clarifying questions, and shape the
+  feature before formal grooming.
+- In `formal-grooming`, prepare the scope and architecture packet, surface the key tradeoffs, and
+  obtain explicit human approval before non-trivial implementation starts.
+- In `execution`, keep task routing, reviewer routing, trace updates, and ordinary rework loops
+  moving autonomously when the next step is already defined, but return to the human for approval
+  gates, material scope changes, strategic tradeoffs, dependency deadlocks, debt acceptance
+  decisions that exceed the agreed posture, round-cap escalations, or environment interventions
+  that need a human choice.
+- In `closeout`, return to the human with rollout status, residual risk, verification state, and
+  follow-up work, including any accepted technical debt, rather than ending on raw worker or
+  reviewer output.
+- Route human-requested changes back through orchestrator task control; update ownership and trace
+  state before redirecting workers or reviewers.
+- Reviewer agents own formal specialist findings and pass/fail recommendations; the orchestrator
+  owns review coordination, presentation of findings to the human, accept/rework routing, and final
+  task-state transitions.
+- Ask the smallest set of high-value questions needed for the next coherent decision and explain
+  why each question matters.
+- When escalating to the human, present the current state, blocker families, impacted tasks,
+  concrete response options, and the recommended next move.
+- Record meaningful human approvals, rejections, waivers, and redirections in the feature trace
+  before execution continues.
+- Direct specialist-to-human control flow is exceptional, must remain tightly scoped, and must be
+  summarized back into the orchestrator-controlled trace.
 
 ## Working Rules
 
@@ -120,12 +162,21 @@ Every substantial orchestrator response should end with a clear artifact for the
 - For delegated Claude implementation, prefer a rendered worker packet over a hand-written long
   prompt. Use `../gemo-foundation/references/claude-worker-prompt-schema.md` plus
   `../gemo-foundation/scripts/render-claude-worker-prompt.sh` to compile task-local context from
-  the feature trace and canonical worker skill.
+  the feature trace, canonical worker skill, and required reviewer acceptance contracts.
 - One task has one owner, one reviewer path, and one explicit escalation condition.
 - Treat stale or contradictory trace documents as process defects and resolve them quickly.
+- Technical debt introduced during implementation or review must be triaged immediately as fix-now
+  work, tracked debt, or a blocker requiring human direction.
+- Do not hide technical debt inside generic residual-risk, follow-up, or summary text without a
+  debt ID, owner, rationale, rollout posture, and retirement trigger.
 - Human approval is mandatory after grooming / architecture and before implementation for
   non-trivial work.
 - Orchestrator owns task control and acceptance.
+- Orchestrator is the coordination authority for task sequencing, dependency release, reviewer
+  routing, acceptance state, and rollout promotion.
+- Review ownership is split deliberately: reviewer agent(s) own formal specialist review findings,
+  the orchestrator owns coordination-level triage plus accept/rework routing, and the human owns
+  architecture approval plus any round-cap or strategic exception decision.
 - Orchestrator advances the control plane autonomously. When a worker or reviewer event arrives,
   do not wait for the user to prompt the next orchestration step if the next action is already
   defined by the execution plan, review plan, or traceability rules.
@@ -152,6 +203,8 @@ Every substantial orchestrator response should end with a clear artifact for the
 - Default supervision cadence is one sweep every 45 seconds across all live worker surfaces, plus
   an extra sweep after any local work step longer than 30 seconds and before any status report or
   dependent task launch.
+- Delegated implementation workers must start in plan mode before editing. Their first successful
+  checkpoint is a surfaced task plan, not a code diff.
 - Delegated workers must notify the orchestrator on first meaningful progress, blocker/attention,
   and result-ready state. Silent task termination or silent idling after completion is a process
   defect.
@@ -169,6 +222,16 @@ Every substantial orchestrator response should end with a clear artifact for the
 - When a reviewer agent finishes, mirror the outcome into the active cmux workspace via
   `../gemo-foundation/scripts/cmux-reviewer-report.sh` and update `reviews.md`,
   `feature-state.md`, and `events.jsonl` within 60 seconds before routing rework or acceptance.
+- If debt is consciously deferred, record or update the debt item in `feature-state.md`,
+  `reviews.md`, `decisions.md`, `rollout.md`, and `events.jsonl` before advancing the task.
+- Autonomous review and rework loops are capped at 3 review rounds per task. If a task would
+  require a 4th review round or more, stop the autonomous loop, mark the task and feature as
+  blocked, surface the unresolved blocker families, and return control to the human for the next
+  decision before launching more review or rework.
+- A round-cap escalation must include a human decision handoff, not just a stop signal. Summarize
+  the latest completed reviewer outcomes, the remaining unresolved blocker families, what changed
+  or closed in the most recent rework, and the concrete next-move options so the human can decide
+  quickly.
 - Reviewer supervision is a loop, not a one-shot poll. After reviewer launch, keep waiting on the
   active reviewer agents until they reach terminal status or a real blocker appears.
 - Use `wait_agent` with a long timeout for reviewer supervision: preferred timeout is 120000 ms;
@@ -224,6 +287,10 @@ Every substantial orchestrator response should end with a clear artifact for the
 
 8. Build the task graph.
 - Assign task IDs, owners, repo scope, reviewer scope, retry windows, and escalation conditions.
+- Record dependency order, handoff prerequisites, unblock signals, and the owner of each next-step
+  transition before launching any dependent task.
+- Declare the debt posture for each task: what must be fixed before acceptance, what may become
+  tracked debt, who owns deferred debt, and what trigger retires it.
 - For each delegated task, record the worker runtime, worker permission mode, worktree / branch,
   cmux surface, launch command, prompt schema, prompt render command, handoff artifact,
   launch-verification method, worker notification contract, supervision cadence,
@@ -238,17 +305,32 @@ Every substantial orchestrator response should end with a clear artifact for the
   and current feature trace instead of hand-writing a long bespoke prompt whenever the renderer can
   express the task cleanly.
 - Launch the worker in the assigned surface in YOLO mode by default, include the worker
-  notification contract in the handoff, and require first acknowledgment before moving the task to
-  `in_progress`.
+  notification contract in the handoff, require first planning acknowledgment before moving the
+  task into active execution, and do not skip the plan gate.
 - Start supervision as soon as launch verification succeeds. Do not rely on launch-time checks
   alone.
 - While any delegated task is `in_progress`, run a supervision sweep at least every 45 seconds, and
   again after any local work step longer than 30 seconds.
+- Release dependent work only when the prerequisite task state, review routing state, and trace
+  documents all agree on readiness.
+- When a worker or reviewer surfaces a shortcut, deferred cleanup, missing hardening step, or
+  knowingly incomplete proof path, classify it as technical debt immediately instead of burying it
+  in generic rework or residual-risk language.
 - When a worker sends a result-ready or blocked notification to the orchestrator surface, treat it
   as an immediate trigger to route that task to the next control step.
 - When a reviewer completes or partially completes, treat that event as an immediate trigger to
   update the trace, mirror workspace state, and either continue the reviewer loop or route rework
   without waiting for user input.
+- Before launching follow-up rework or a follow-up reviewer pass, count prior review rounds for the
+  task. If more than 3 review rounds would be required, do not continue autonomously; block the
+  task, update the trace and workspace, and ask the human to choose the next move.
+- When that round-cap handoff happens, provide a concise decision packet to the human covering:
+  the latest backend/frontend/security reviewer summaries, the still-open blocker families, any
+  blocker families that were closed in the last rework, and the practical options for how to
+  proceed.
+- If the debt posture changes rollout readiness or weakens an approved invariant, return to the
+  human with the debt ID, rationale, owner, alternatives, and recommended next move before
+  accepting or deferring it.
 - When a task is result-ready, perform only the minimum orchestrator sanity checks needed to verify
   ownership, changed scope, and reviewer set. Do not treat that sanity check as the formal review.
 - If the checker reports `awaiting_acceptance`, launch the required reviewer agent(s) within
@@ -265,6 +347,11 @@ Every substantial orchestrator response should end with a clear artifact for the
 - Spawn a dedicated Codex reviewer agent for each required reviewer skill on the task.
 - Reviewers review the implementation worker's output; the orchestrator does not substitute its own
   specialist review for backend, frontend, security, extension, devops, or retool reviewer skills.
+- Treat coordination-level triage and formal specialist review as separate gates: the orchestrator
+  verifies ownership, scope, dependencies, and reviewer set, while reviewer agent(s) own the
+  substantive findings and pass/fail recommendation.
+- Require reviewers and the orchestrator to state whether unresolved issues are rollout-blocking,
+  must be fixed now, or may be carried as tracked technical debt.
 - Orchestrator is the connector between the implementation worker and the reviewer agent(s): it
   hands off scope and changed files to reviewers, records their findings, routes rework back to the
   implementation worker, and requests follow-up review when needed.
@@ -276,12 +363,18 @@ Every substantial orchestrator response should end with a clear artifact for the
 - Mirror each reviewer completion into the workspace with
   `../gemo-foundation/scripts/cmux-reviewer-report.sh`, then update the trace before deciding the
   next control step.
+- If reviewer findings would push the task beyond 3 review rounds, stop instead of launching more
+  autonomous rework or another reviewer pass. Mark the task `blocked`, record that human direction
+  is required, and present a human decision handoff to the user with the latest reviewer summaries,
+  the unresolved blocker families, what improved in the latest round, and the practical next-move
+  options.
 - Once reviewer findings are clear and exit evidence is present, promote the task to accepted,
   rework, or reviewer-pass state without leaving it parked as generic `in_progress`.
 - Track reviewer findings and resolve rework.
 
 11. Close the loop.
-- Produce rollout notes, residual risk, and the final orchestrator summary.
+- Produce rollout notes, residual risk, accepted or retired debt status, and the final
+  orchestrator summary.
 - If the feature materially changed the product surface, verify that the shared product knowledge
   base was updated before closure.
 
@@ -313,7 +406,17 @@ Reviewers:
 
 - one workspace per feature
 - orchestrator is the anchor surface
+- the orchestrator pane stays the main pane for the workspace and remains visible as the control
+  plane
 - brainstorm mode still uses the orchestrator as the single collaborative anchor
+- create structural lanes once from the anchor surface with local `cmux new-split` or `cmux new-pane`
+  when needed, then add later work into those panes with `cmux new-surface --pane ...`
+- do not repurpose the orchestrator pane for browser, test, log, or specialist work once durable
+  lanes exist unless an explicit temporary exception is recorded
+- normalize surface titles immediately; use stable unique names for orchestrator, durable lanes,
+  and specialist work so launcher and checker scripts can resolve them safely
+- record pane creation sequence, pane reuse rule, surface naming convention, and any extra-pane
+  justification in the execution plan before expanding the layout
 - use sidebar metadata as the control plane
 - use the canonical envelope protocol for collaboration
 - do not use peer-to-peer control flow between specialists

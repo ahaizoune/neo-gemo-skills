@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Security Reviewer"
-  short_description: "Review changes for security and trust-boundary risk"
-  default_prompt: "Use $gemo-security-reviewer to review this Gemo change with findings first, focusing on auth, authorization, tokens, trust boundaries, execution surfaces, and rollout-blocking security risk."
+  short_description: "Detailed security review across web, frontend, and backend"
+  default_prompt: "Use $gemo-security-reviewer to review this Gemo change with findings first, providing detailed stack-aware security feedback, root-cause analysis, safer remediation guidance, and proactive prevention advice across web, frontend, backend, and extension trust boundaries, including auth, authorization, tokens, sessions, execution surfaces, injection risk, secret exposure, and rollout-blocking security issues."
 
 policy:
   allow_implicit_invocation: true

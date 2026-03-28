@@ -8,6 +8,7 @@ and Gemo-specific cmux collaboration guidance.
 This repository defines a skill suite for feature delivery across the Gemo workspace:
 
 - `gemo-orchestrator` as the main entry point
+- `gemo-skill-foundry` for skill-suite evolution and world-class skill authoring
 - `gemo-product-manager` for product brainstorming and Figma-first feature shaping
 - `gemo-architect` for architecture framing and design review
 - discipline specialists for backend, React, extension, devops, and Retool work
@@ -34,6 +35,7 @@ repository instead of being maintained as separate authorities.
 
 - `gemo-foundation`
 - `gemo-orchestrator`
+- `gemo-skill-foundry`
 - `gemo-product-manager`
 - `gemo-architect`
 - `gemo-backend`
@@ -70,6 +72,7 @@ neo-gemo-skills/
 └── skills/
     ├── gemo-foundation/
     ├── gemo-orchestrator/
+    ├── gemo-skill-foundry/
     ├── gemo-product-manager/
     ├── gemo-architect/
     ├── gemo-backend/
@@ -104,6 +107,25 @@ Force-sync installed skills and keep backups of replaced copies:
 
 ```bash
 ./scripts/sync_skills.sh
+```
+
+## Skill Foundry Usage
+
+Create a new skill from a short brief:
+
+```text
+Use $gemo-skill-foundry to create a new Gemo skill.
+Brief: we need a user-facing skill that can evolve the Gemo skill suite itself, benchmark roles
+externally, scan the real repos, and keep shared ontology docs current.
+Target lane: skill-foundry
+```
+
+Upgrade an existing skill from a short brief:
+
+```text
+Use $gemo-skill-foundry to upgrade gemo-orchestrator.
+Brief: it needs stronger discipline around skill-suite evolution tasks, including routing to a
+dedicated foundry role and keeping ontology docs in sync when the suite changes.
 ```
 
 ## Feature Trace Scaffolding
@@ -142,11 +164,13 @@ docs/features/<feature-slug>/agentic/
 - Every feature should use the same canonical document set and packet formats under
   `docs/features/<feature-slug>/agentic/`.
 - The orchestrator owns task control, acceptance, and promotion to rollout.
+- Technical debt created during execution must be resolved, tracked with an owner and retirement
+  path, or explicitly accepted before rollout.
 - Peer-to-peer communication is disallowed by default.
 - Exception: narrowly scoped clarification may happen directly, but it must be linked to a feature
   and task ID and summarized back into the feature trace.
 - Claude is the default low-level coding worker layer.
-- Codex owns orchestration, architecture synthesis, review authority, and final acceptance.
+- Codex owns orchestration, architecture synthesis, review coordination, and final acceptance.
 
 ## Next Validation Steps
 

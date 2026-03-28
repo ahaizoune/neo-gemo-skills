@@ -27,13 +27,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 DEFAULT_RECENT_EVENTS = 6
 DEFAULT_RECENT_REVIEW_ROUNDS = 2
 DEFAULT_RECENT_DECISIONS = 6
-SKILL_SECTION_PRIORITY = {
+WORKER_SECTION_PRIORITY = {
     "gemo-backend": [
         "Working Rules",
+        "Output Contract",
         "Backend Engineering Best Practices",
         "Stack-Specific Must-Haves",
         "Review Loop Prevention",
@@ -42,11 +43,20 @@ SKILL_SECTION_PRIORITY = {
     ],
     "gemo-react": [
         "Working Rules",
+        "Output Contract",
         "Review Loop Prevention",
         "Validation And Handoff",
         "Delivery Expectations",
     ],
 }
+
+REVIEWER_SECTION_PRIORITY = [
+    "Review Loop Prevention",
+    "Output Contract",
+    "Detailed Feedback Contract",
+    "Rework Handoff Contract",
+    "Review Contract",
+]
 
 
 def fail(message: str) -> None:
@@ -210,17 +220,27 @@ def parse_events(events_text: str) -> list[dict[str, object]]:
     return events
 
 
-def extract_skill_sections(skill_text: str, worker_skill: str) -> list[tuple[str, str]]:
-    desired = SKILL_SECTION_PRIORITY.get(
-        worker_skill,
-        ["Working Rules", "Review Loop Prevention", "Validation And Handoff", "Delivery Expectations"],
-    )
+def extract_named_sections(skill_text: str, desired: list[str]) -> list[tuple[str, str]]:
     sections = []
     for title in desired:
         body = extract_level_section(skill_text, 2, title)
         if body:
             sections.append((title, body.strip()))
     return sections
+
+
+def extract_skill_sections(skill_text: str, worker_skill: str) -> list[tuple[str, str]]:
+    desired = WORKER_SECTION_PRIORITY.get(
+        worker_skill,
+        [
+            "Working Rules",
+            "Output Contract",
+            "Review Loop Prevention",
+            "Validation And Handoff",
+            "Delivery Expectations",
+        ],
+    )
+    return extract_named_sections(skill_text, desired)
 
 
 def strip_ticks(value: str) -> str:
@@ -234,13 +254,18 @@ def plain(value: str) -> str:
     return collapse(strip_ticks(value))
 
 
-def split_file_field(value: str) -> list[str]:
-    paths = []
-    for part in value.split(","):
+def split_list_field(value: str) -> list[str]:
+    items = []
+    normalized = value.replace(" and ", ",").replace(";", ",")
+    for part in re.split(r",|\n", normalized):
         candidate = strip_ticks(part.strip())
         if candidate and candidate.lower() != "n/a":
-            paths.append(candidate)
-    return paths
+            items.append(candidate)
+    return items
+
+
+def split_file_field(value: str) -> list[str]:
+    return split_list_field(value)
 
 
 def render_bullets(items: list[str]) -> list[str]:
@@ -288,6 +313,9 @@ def main(argv: list[str]) -> int:
     skill_text = read_text(skill_path)
 
     task = parse_execution_task(execution_plan_text, args.task_id)
+    reviewer_skill_names = split_list_field(task.get("Reviewer Agent Skills", "")) or split_list_field(
+        task.get("Reviewer", "")
+    )
     decisions = [
         decision
         for decision in parse_decisions(decisions_text)
@@ -313,8 +341,20 @@ def main(argv: list[str]) -> int:
         extract_level_section(feature_state_text, 2, "Current Architecture Decision")
     )
     architecture_summary = plain(architecture_fields.get("Summary", ""))
-    current_blockers = collapse(extract_level_section(feature_state_text, 2, "Current Blockers"))
+    current_blockers_text = extract_level_section(feature_state_text, 2, "Current Blockers")
+    current_blocker_fields = parse_top_level_bullets(current_blockers_text)
     skill_sections = extract_skill_sections(skill_text, args.worker_skill)
+    reviewer_sections = []
+    for reviewer_skill in list(dict.fromkeys(reviewer_skill_names)):
+        reviewer_skill_path = foundation_root.parent / reviewer_skill / "SKILL.md"
+        if not reviewer_skill_path.exists():
+            fail(f"reviewer skill not found: {reviewer_skill_path}")
+        reviewer_sections.append(
+            (
+                reviewer_skill,
+                extract_named_sections(read_text(reviewer_skill_path), REVIEWER_SECTION_PRIORITY),
+            )
+        )
 
     relevant_decisions = []
     for decision in decisions:
@@ -351,17 +391,33 @@ def main(argv: list[str]) -> int:
     append(f"- Task ID: `{args.task_id}`")
     append(f"- Task Title: `{task_title}`")
     append(f"- Worker Skill: `{args.worker_skill}`")
+    if reviewer_skill_names:
+        append(f"- Reviewer Skills: {', '.join(f'`{name}`' for name in reviewer_skill_names)}")
     append(f"- Role: `{plain(task.get('Role', 'implementation'))}`")
     append(f"- Repo / Scope: {collapse(task.get('Repo / Scope', '').strip())}")
     append(f"- Worktree / Branch: {collapse(task.get('Worktree / Branch', '').strip())}")
+    append("")
+    append("## Execution Control")
+    append("")
+    append("- Start in plan mode before any edits.")
+    append("- Read the required files and inspect the highest-risk invariants first.")
+    append("- Reply with a concise execution plan scoped to the owned task.")
+    append("- Stop at the execution approval gate before making code changes.")
+    append("- If a contract gap or runtime blocker appears during planning, escalate immediately.")
     append("")
     append("## Task Goal")
     append("")
     append(f"- Goal: `{task_title}`")
     append(f"- Depends On: {collapse(task.get('Depends On', 'none').strip() or 'none')}")
     append(f"- Exit Evidence: {collapse(task.get('Exit Evidence', 'not specified').strip())}")
-    if current_blockers and current_blockers.lower() != "- `none`":
-        append(f"- Current Blockers: {current_blockers}")
+    if current_blocker_fields:
+        append("- Current Blockers:")
+        for key, value in current_blocker_fields.items():
+            append(f"  - {key}: {collapse(value)}")
+    else:
+        current_blockers = collapse(current_blockers_text)
+        if current_blockers and current_blockers.lower() not in {"- `none`", "- none", "none"}:
+            append(f"- Current Blockers: {current_blockers}")
     append("")
     append("## Files To Read First")
     append("")
@@ -423,6 +479,24 @@ def main(argv: list[str]) -> int:
                     f"  - Finding {index} [{plain(str(finding.get('Severity', 'unknown')))}]: "
                     f"{plain(str(finding.get('Issue', '')))}"
                 )
+                blocker_family = plain(str(finding.get("Blocker Family", "")))
+                if blocker_family:
+                    append(f"    Blocker Family: {blocker_family}")
+                family_status = plain(str(finding.get("Family Status", "")))
+                if family_status:
+                    append(f"    Family Status: {family_status}")
+                invariant = plain(str(finding.get("Violated Invariant / Expectation", "")))
+                if invariant:
+                    append(f"    Violated Invariant / Expectation: {invariant}")
+                root_cause = plain(str(finding.get("Weak Enforcement Point / Root Cause", "")))
+                if root_cause:
+                    append(f"    Weak Enforcement Point / Root Cause: {root_cause}")
+                siblings = plain(str(finding.get("Sibling Surfaces To Check", "")))
+                if siblings:
+                    append(f"    Sibling Surfaces To Check: {siblings}")
+                proof_path = plain(str(finding.get("Strongest Proof Path", "")))
+                if proof_path:
+                    append(f"    Strongest Proof Path: {proof_path}")
                 action = plain(str(finding.get("Required Action", "")))
                 if action:
                     append(f"    Required Action: {action}")
@@ -441,10 +515,29 @@ def main(argv: list[str]) -> int:
         append("")
         append(body)
         append("")
+    append("## Reviewer Acceptance Contract")
+    append("")
+    if not reviewer_sections:
+        append("- No reviewer skills are declared for this task.")
+        append("")
+    else:
+        for reviewer_skill, sections in reviewer_sections:
+            append(f"### `{reviewer_skill}`")
+            append("")
+            if not sections:
+                append("- No acceptance-shaping sections are available for this reviewer skill.")
+                append("")
+                continue
+            for title, body in sections:
+                append(f"#### {title}")
+                append("")
+                append(body)
+                append("")
     append("## Validation Required")
     append("")
     append(f"- Task Exit Evidence: {collapse(task.get('Exit Evidence', 'not specified').strip())}")
     review_actions = []
+    review_proof_paths = []
     for round_info in review_rounds:
         for finding in round_info["findings"]:
             if plain(str(finding.get("Status", ""))).lower() == "closed":
@@ -452,11 +545,19 @@ def main(argv: list[str]) -> int:
             action = plain(str(finding.get("Required Action", "")))
             if action:
                 review_actions.append(action)
+            proof_path = plain(str(finding.get("Strongest Proof Path", "")))
+            if proof_path:
+                review_proof_paths.append(proof_path)
     review_actions = list(dict.fromkeys(review_actions))
+    review_proof_paths = list(dict.fromkeys(review_proof_paths))
     if review_actions:
         append("- Latest Review Obligations:")
         for action in review_actions:
             append(f"  - {action}")
+    if review_proof_paths:
+        append("- Reviewer Proof Paths:")
+        for proof_path in review_proof_paths:
+            append(f"  - {proof_path}")
     append("")
     append("## Escalation Contract")
     append("")
@@ -465,8 +566,8 @@ def main(argv: list[str]) -> int:
     append("")
     append("## First Response")
     append("")
-    append("- Reply with: scope acknowledged, first files or invariants to inspect, and any immediate blocker.")
-    append("- Then start implementation inside the owned scope.")
+    append("- Reply with: scope acknowledged, first files or invariants to inspect, the initial implementation plan, and any immediate blocker.")
+    append("- Do not start implementation until that plan has been surfaced and approved.")
     append("")
     append("## Collaboration Note")
     append("")

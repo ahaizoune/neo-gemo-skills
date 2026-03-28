@@ -22,6 +22,7 @@ and reusable.
 
 Supporting skills:
 
+- `gemo-skill-foundry`
 - `gemo-product-manager`
 - `gemo-architect`
 - implementation specialists by discipline
@@ -32,7 +33,7 @@ The orchestrator can start in brainstorm mode before formal grooming and archite
 
 ### 3. Hybrid Codex / Claude model
 
-- Codex: orchestrator, architect, review authority, final acceptance
+- Codex: orchestrator, architect, review coordination, final acceptance
 - Claude: low-level coding workers
 
 The protocol, traceability model, and ownership rules are vendor-neutral.
@@ -59,6 +60,8 @@ Per feature, persist:
 
 - human approval after grooming / architecture and before implementation
 - reviewer approval before rollout readiness on non-trivial work
+- technical debt introduced during execution must be either retired or consciously accepted with an
+  explicit owner and follow-up path before rollout
 
 ## Role Taxonomy
 
@@ -69,6 +72,7 @@ Per feature, persist:
 ### Entry and design
 
 - `gemo-orchestrator`
+- `gemo-skill-foundry`
 - `gemo-product-manager`
 - `gemo-architect`
 
@@ -105,7 +109,7 @@ This separates:
 
 - durable role knowledge
 - runtime delegation
-- review authority
+- review coordination
 - traceability
 
 without making the orchestrator a giant untestable prompt blob.

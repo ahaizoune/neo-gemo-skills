@@ -8,10 +8,24 @@ Focus on:
 - server/client boundary correctness
 - state integrity across loading, error, empty, and success states
 - auth and session safety
+- web best practices in the rendered output, not only code style
 - accessibility and keyboard/screen-reader impact
 - regression risk in user-critical flows
 - cache and normalization integrity across server and client data sources
 - observability for risky or high-friction flows
+
+## Repo-Local Conventions Come First
+
+Read the target repo's local `.cursor` guidance before reviewing.
+
+- `neo-gemo-talent-platform`: review against the server-first App Router, BFF-only client fetch,
+  `CurrentUser` cache, Formik-default, CVA, `@/lib/utils` `cn()`, and strict TypeScript
+  conventions defined under `.cursor/rules/`
+- `neo-gemo-scorecard`: review against the Shadcn UI, Zustand, React Query, RHF + Zod,
+  `@/lib/cn.ts`, named-export, kebab-case, skeleton-loading, and design-token conventions defined
+  in `.cursor/`
+
+Do not treat one repo's convention as a defect in the other repo.
 
 ## Frontend Stack In Scope
 
@@ -27,6 +41,42 @@ Focus on:
 - Tailwind CSS and design tokens
 - Tiptap, markdown rendering, and sanitization-sensitive content
 - Sentry, OpenTelemetry, Vitest, React Testing Library, and MSW
+
+## Web Best Practice Must-Haves
+
+### Semantic HTML And ARIA
+
+- prefer native controls and semantic HTML before ARIA-heavy div/span recreations
+- accessible names, labels, descriptions, headings, lists, and landmarks should remain coherent
+- custom ARIA should only supplement semantics, not replace available native behavior
+
+### Keyboard And Focus
+
+- clickable controls must be focusable and keyboard-operable
+- avoid positive `tabindex`; focus order should follow document logic
+- dialogs, menus, listboxes, popovers, and other composites must preserve the expected focus and
+  keyboard contract
+- visible focus indication is required on interactive elements
+
+### Responsive Layout And Media
+
+- no horizontal overflow or clipped core actions on common mobile breakpoints
+- text wrapping, zoom behavior, sticky UI, and dense forms remain usable on smaller screens
+- images, videos, iframes, and embedded content scale safely within containers
+
+### Performance And Responsiveness
+
+- heavy client islands are lazy-loaded or split only when it improves real route behavior
+- hydration remains stable; server and client markup differences are treated as defects
+- loading fallbacks are intentional and not misleading
+- interaction responsiveness matters after initial load too; flag changes likely to worsen user
+  responsiveness or INP-sensitive flows
+
+### Forms And Feedback
+
+- every field has a durable label or accessible name
+- validation, hints, error messages, disabled states, and pending states are communicated clearly
+- submit and draft-save behaviors stay intentionally distinct where the product requires it
 
 ## Next.js App Router Must-Haves
 
@@ -71,6 +121,10 @@ Focus on:
 - dialog, popover, tooltip, select, and focus behavior remain correct
 - Tailwind and token usage preserve the existing design system instead of introducing drift
 - responsive behavior and overflow handling are safe for desktop and smaller screens
+- scorecard changes keep using Shadcn UI and token-driven patterns where the local repo expects
+  them
+- talent-platform changes keep using local CVA/`cn()`/component conventions where the local repo
+  expects them
 
 ## Rich Text / Content Must-Haves
 
@@ -103,9 +157,15 @@ Look hard at:
 - missing states in user workflows
 - stale or duplicated client state
 - auth assumptions crossing server/client boundaries
+- clickable `div`/`span` controls with missing semantics or keyboard behavior
+- positive `tabindex`, broken focus traps, missing focus return, or invisible focus styling
+- dialogs, menus, listboxes, and wrapped primitives that no longer match expected keyboard
+  interaction
+- overflow, clipped actions, non-responsive embeds, or broken small-screen layouts
 - cache invalidation gaps after mutation
 - hydration or client/server leakage caused by wrong imports or boundaries
 - form behavior that diverges between draft save and final submit
 - rich text or markdown flows that lose sanitization or content integrity
 - instrumentation regressions that make critical flows harder to debug
+- repo-local convention drift that weakens consistency or hides risk
 - weak manual verification for interaction-heavy changes

@@ -45,6 +45,15 @@
 - Risk:
 - Monitoring:
 
+## Accepted Technical Debt
+
+- Debt ID:
+- Reason:
+- Owner:
+- Rollout Posture:
+- Retirement Trigger:
+- Follow-Up Horizon:
+
 ## Closure Summary
 
 - Outcome:

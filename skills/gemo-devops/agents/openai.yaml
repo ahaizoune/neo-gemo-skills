@@ -1,7 +1,7 @@
 interface:
   display_name: "Gemo Devops"
-  short_description: "Infrastructure and deployment work for Gemo"
-  default_prompt: "Use $gemo-devops to implement the infrastructure or deployment portion of this Gemo feature."
+  short_description: "Senior Pulumi/AWS infra for cost, security, scale, monitoring"
+  default_prompt: "Use $gemo-devops to implement the infrastructure or deployment portion of this Gemo feature in gemo-devops, grounding the work in the real Python Pulumi AWS stack used by the repo and optimizing for rollout safety, cost, security, observability, and environment fidelity."
 
 policy:
   allow_implicit_invocation: true

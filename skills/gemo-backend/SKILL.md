@@ -1,6 +1,6 @@
 ---
 name: gemo-backend
-description: Gemo backend implementation skill for neo-gemo-platform, covering GemForge, GemHub, FastAPI routes, services, workers, data access, migrations, integrations, and backend feature delivery under orchestrated ownership.
+description: Gemo backend implementation skill for neo-gemo-platform, covering GemForge, GemHub, FastAPI routes, domain services, monorepo libraries, workers, data access, migrations, integrations, auth-sensitive flows, and rollout-safe backend feature delivery under orchestrated ownership.
 ---
 
 # Gemo Backend
@@ -10,6 +10,7 @@ Use this skill for low-level backend implementation in `neo-gemo-platform`.
 Read these shared references as needed:
 
 - `../gemo-foundation/references/repo-map.md`
+- `../gemo-foundation/references/role-matrix.md`
 - `../gemo-foundation/references/product-feature-map.md`
 - `../gemo-foundation/references/review-standards.md`
 - `../gemo-foundation/references/review-methodology.md`
@@ -25,13 +26,51 @@ Read these shared references as needed:
 - migrations
 - workers and integration flows
 
+## Source-Of-Truth Zones
+
+Ground backend work in the actual `neo-gemo-platform` monorepo surface before editing:
+
+- `apps/gemforge/src/gemforge`: main GemForge application modules, routes, services, policies, and
+  persistence seams
+- `apps/gemhub/src/gemhub`: GemHub application modules and route behavior
+- `libs/core/src/core`: shared infrastructure, settings, auth, database, and runtime helpers
+- `libs/shared/src/shared`: cross-app shared models, utilities, and contract helpers
+- `libs/notification/src/notification`: notification flows, queues, and message-delivery logic
+- `migrations/`: Alembic history and rollout-sensitive schema changes
+- `scripts/`: repo-native CLI and operational commands such as DB, worker, token, and test flows
+- `tests/` and app-local test trees: route, integration, worker, and migration-adjacent coverage
+
 ## Working Rules
 
 - Respect explicit task and repo ownership from the orchestrator.
+- Inspect the owned app, library, migration, and test zones before editing so stack assumptions
+  come from repo evidence, not memory.
 - Record meaningful implementation events in the feature trace.
 - Escalate through the orchestrator after the configured retry window or failed retries.
 - Do not hand work directly to another specialist.
 - Call out migration and rollout implications explicitly.
+- Treat `core`, `shared`, and `notification` as contract surfaces when the same invariant is used
+  by multiple routes, jobs, or apps.
+
+## Input Contract
+
+Strong inputs include:
+
+- task scope or owned file/module zone inside `neo-gemo-platform`
+- feature trace packet when the work is non-trivial
+- architecture packet when contracts, auth, jobs, or migrations are changing
+- current backend diff or target modules when this is a rework round
+- rollout, migration, provider, or token context when the risk depends on environment behavior
+
+## Output Contract
+
+Every substantial backend implementation handoff should cover:
+
+- owned repo and module zones changed
+- contract, migration, worker, and auth implications
+- validation run at the real risk boundary
+- remaining rollout or compatibility risk
+- follow-up escalation needs when architecture or shared-contract decisions remain open
 
 ## Stack Best Practices
 
@@ -121,6 +160,14 @@ Implement for the concrete backend stack used by `neo-gemo-platform`, not generi
   that exercises real wiring when the risk depends on framework behavior.
 - In the handoff, name the sibling surfaces you closed, the exact tests that cover them, and any
   intentionally unclosed surfaces that still need escalation.
+
+## Repo-Native Validation Hints
+
+- Prefer repo-native commands when they prove the risk cleanly, for example targeted `pytest`
+  paths, `poetry run test-unit`, `poetry run test-pipeline`, `poetry run test-e2e`, or DB status
+  and migration commands such as `poetry run db-status`.
+- When the risk depends on app wiring, prefer validation that crosses the real app, dependency,
+  worker, queue, or migration seam instead of isolated helper tests.
 
 ## Delivery Expectations
 

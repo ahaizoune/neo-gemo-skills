@@ -43,12 +43,17 @@ Use this reference when orchestrating or reviewing a feature.
 
 6. Implementation loop
 - specialist workers implement within owned scope
-- orchestrator reviews outputs
+- orchestrator performs coordination-level output triage for ownership, changed scope, dependency
+  impact, and reviewer routing
+- reviewer agents own formal specialist review on non-trivial delegated work
+- technical debt introduced during implementation or review must be classified as fix-now,
+  explicitly tracked debt, or a blocker requiring human direction
 - rework is routed back to the same specialist unless scope changes materially
 
 7. Integration and verification
 - execute tests and manual verification
 - check observability and rollout risk
+- make debt status explicit: retired, accepted with owner and retirement path, or rollout-blocking
 - reviewers must sign off before rollout readiness
 - primary packet: `reviews.md`
 
@@ -56,6 +61,7 @@ Use this reference when orchestrating or reviewing a feature.
 - capture deployment / release sequence
 - capture rollback strategy
 - capture residual risks and follow-up work
+- capture any accepted technical debt with owner, monitoring, and retirement trigger
 - update the shared product knowledge base when product capabilities or workflow relationships
   changed
 - primary packet: `rollout.md`
@@ -64,5 +70,6 @@ Use this reference when orchestrating or reviewing a feature.
 
 - orchestrator owns task control
 - reviewers produce findings before summaries
+- do not let technical debt remain implicit in generic residual-risk or follow-up language
 - peer-to-peer control flow is disallowed
 - direct worker clarification is exceptional, tightly scoped, and must be logged back

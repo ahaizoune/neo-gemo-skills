@@ -11,12 +11,14 @@ Classifies the visible Claude worker state for a cmux surface.
 
 Statuses:
   running              worker appears active or has no actionable gate visible
+  awaiting_plan_approval  Claude produced an initial plan and is waiting at the execution gate
   awaiting_acceptance  Claude is waiting at the "accept edits on" review gate
   attention_required   Claude is waiting on an approval or other interactive prompt
   unknown              no clear classification could be made
 
 Exit codes:
   0  running
+  15 awaiting_plan_approval
   10 awaiting_acceptance
   20 attention_required
   30 unknown
@@ -120,7 +122,11 @@ matched=""
 if [[ -z "${screen//[[:space:]]/}" ]]; then
   status="unknown"
   reason="empty_screen"
-elif [[ "$screen_lc" == *"accept edits on"* || "$screen_lc" == *"shift+tab to cycle"* ]]; then
+elif [[ "$screen_lc" == *"written up a plan"* || "$screen_lc" == *"ready to execute"* ]]; then
+  status="awaiting_plan_approval"
+  reason="claude_plan_gate"
+  matched="ready to execute"
+elif [[ "$screen_lc" == *"accept edits on"* ]]; then
   status="awaiting_acceptance"
   reason="claude_accept_gate"
   matched="accept edits on"
@@ -157,6 +163,7 @@ fi
 
 case "$status" in
   running) exit 0 ;;
+  awaiting_plan_approval) exit 15 ;;
   awaiting_acceptance) exit 10 ;;
   attention_required) exit 20 ;;
   *) exit 30 ;;

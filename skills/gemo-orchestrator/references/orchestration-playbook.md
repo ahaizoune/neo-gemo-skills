@@ -76,7 +76,7 @@ These three documents are updated throughout the lifecycle.
 - primary document: `reviews.md`
 - supporting documents: `feature-state.md`, `events.jsonl`
 - exit condition: required findings are resolved or consciously deferred and reviewer status is
-  explicit
+  explicit, and any deferred technical debt is explicitly tracked with owner and rollout posture
 
 ### 6. Rollout And Closeout
 
@@ -84,8 +84,8 @@ These three documents are updated throughout the lifecycle.
 - primary owner: orchestrator
 - primary document: `rollout.md`
 - supporting documents: `feature-state.md`, `decisions.md`, `events.jsonl`
-- exit condition: rollout sequence, rollback, residual risk, and product knowledge base update
-  status are explicit
+- exit condition: rollout sequence, rollback, residual risk, accepted technical debt, and product
+  knowledge base update status are explicit
 
 ## Packet Templates
 
@@ -113,6 +113,9 @@ Use these canonical template files when scaffolding or refreshing a feature:
 
 - each task has one owner
 - repo or file scope is explicit
+- dependency release and unblock ownership are explicit
+- debt capture and disposition rules are explicit
+- pane creation sequence, pane reuse rule, and extra-pane trigger are explicit
 - reviewer path is explicit
 - reviewer agent skill set and review launch trigger are explicit
 - escalation window is explicit
@@ -121,6 +124,8 @@ Use these canonical template files when scaffolding or refreshing a feature:
   surface, launch command, prompt schema, prompt render command, launch verification, worker
   notification contract, supervision cadence, result-ready detection, review handoff mode,
   next-step trigger, stable sidebar status key, and task-labeled sidebar value format
+- cmux plan includes a surface naming convention and a surface-title map for anchor, durable lanes,
+  and specialist work
 
 ## Worker Prompt Rendering Rule
 
@@ -135,6 +140,7 @@ Use these canonical template files when scaffolding or refreshing a feature:
   - latest review delta from `reviews.md`
   - recent task-local chronology from `events.jsonl`
   - doctrine sections from the canonical worker skill
+  - acceptance-shaping sections from the reviewer skill(s) named in the execution plan
 - omit orchestration-only metadata that does not change implementation decisions:
   - workspace ids
   - sidebar keys and progress values
@@ -147,6 +153,10 @@ Use these canonical template files when scaffolding or refreshing a feature:
 
 - delegated Claude workers launch in YOLO mode by default via `--dangerously-skip-permissions`
 - only deviate to a stricter permission model when the user explicitly asks for it
+- implementation workers must begin in plan mode before editing
+- launch verification should confirm the first planning response, not necessarily active coding
+- if Claude reaches its built-in execution approval gate after producing the initial plan, treat
+  that as the expected pre-implementation checkpoint rather than an implementation defect
 - when a task deviates from the default, record the reason in the execution plan before launch
 - preferred launch path is:
   - render worker packet with `render-claude-worker-prompt.sh`
@@ -174,6 +184,9 @@ Use these canonical template files when scaffolding or refreshing a feature:
   before unrelated work
 - use `scripts/cmux-check-claude-worker.sh` as the default fast-path classifier and inspect the
   live surface directly when the result is `unknown` or the context is ambiguous
+- if a worker reaches `awaiting_plan_approval`, route the plan through the expected approval path,
+  update sidebar and trace state to reflect planning rather than execution, and only then allow
+  implementation to begin
 - if a worker reaches `awaiting_acceptance`, route it into delegated reviewer handoff and launch
   the required reviewer agent(s) within 2 minutes
 - if a worker reaches `attention_required`, log it, surface it in sidebar metadata, and treat the
@@ -216,6 +229,45 @@ Use these canonical template files when scaffolding or refreshing a feature:
 - within 60 seconds of reviewer completion, mirror the outcome into the active workspace via
   `scripts/cmux-reviewer-report.sh`, then update `reviews.md`, `feature-state.md`, and
   `events.jsonl` before routing the next step
+- autonomous reviewer/rework loops stop after 3 review rounds for the same task
+- if unresolved blocker families would require a 4th review round, do not launch more rework or
+  reviewer agents automatically
+- instead, mark the task blocked, append a `human_decision_required` event, update
+  `feature-state.md` and `reviews.md` to show that the round limit was exceeded, and return to the
+  human with a decision handoff packet rather than only a stop message
+- the decision handoff packet must include:
+  - the latest completed review round IDs and reviewer names or skills
+  - a one-line summary of what each latest reviewer concluded
+  - the remaining unresolved blocker families, consolidated so repeated findings are grouped
+  - the blocker families that were closed or reduced in the latest rework, if any
+  - the concrete next-move options the human can choose among
+
+## Coordination Ownership Rule
+
+- orchestrator owns task sequencing, dependency release, reviewer routing, acceptance state, and
+  rollout promotion
+- orchestrator owns technical-debt triage, tracking discipline, and debt escalation routing during
+  execution
+- reviewer agent(s) own formal specialist findings and pass/fail recommendations for non-trivial
+  delegated implementation
+- human approval owns the architecture gate and any round-cap or strategic exception decision
+- human approval also owns material debt acceptance decisions when the debt changes rollout posture,
+  weakens a reviewed invariant, or exceeds the predeclared debt threshold
+- orchestrator may perform light coordination-level readiness checks for ownership, changed scope,
+  dependency impact, and reviewer set, but that check is not the formal review
+
+## Technical Debt Control Rule
+
+- debt introduced during execution or review must be classified immediately as:
+  - fix now before acceptance
+  - tracked debt with explicit owner and retirement trigger
+  - blocker that returns to the human for a decision
+- every tracked debt item must have a debt ID, source task or review, type, rationale, rollout
+  posture, owner, and retirement trigger
+- do not hide debt inside generic residual-risk or follow-up language without a debt record
+- medium or higher debt that weakens a reviewed invariant should return to the human unless the
+  execution plan already declared that debt posture acceptable
+- verify debt retirement or acceptance status before marking rollout ready
 
 ## Document Update Rules
 
@@ -227,8 +279,11 @@ Use these canonical template files when scaffolding or refreshing a feature:
   accepted, or routed to rework
 - append explicit events when reviewer agents are requested, when findings are received, and when
   review passes or fails
+- append explicit events when debt is recorded, accepted, or retired
 - do not leave reviewer completion visible only in the assistant runtime; mirror it into cmux
   notifications/logs and the feature trace immediately
+- when a task is blocked by the 3-round review cap, keep the decision-support summary visible in
+  the trace instead of forcing the human to reconstruct it from the full review history
 - sidebar task statuses must stay readable to a human scanning the workspace panel: keep the key
   stable per task/surface, but set the visible value to `TASK_ID short-label state`
 - if the orchestrator temporarily absorbs a delegated task, record explicit reassignment before
@@ -242,3 +297,10 @@ Use these canonical template files when scaffolding or refreshing a feature:
 - route reviewer findings and rework back to the same specialist unless ownership changed
   materially
 - preserve orchestrator authority over acceptance and promotion
+- convert consciously deferred findings into tracked debt only when the debt record and owner are
+  explicit
+- do not allow more than 3 autonomous review rounds on one task
+- when the round limit is exceeded, freeze the task, keep the current implementation output intact,
+  and escalate back to the human instead of starting another rework loop
+- that escalation must summarize the latest review outcomes and remaining issues clearly enough for
+  the human to decide whether to continue, narrow scope, accept debt, re-architect, or stop
